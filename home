@@ -1,1 +1,9 @@
-<p>緑川シエルのホームページ</p>
+<html>
+<head>
+    <title>My Home Page</title>
+</head>
+<body>
+    <h1>こんにちは！私のホームページへようこそ。</h1>
+    <p>GitHub Pagesで作成しました。</p>
+</body>
+</html>
