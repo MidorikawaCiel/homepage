@@ -37,7 +37,7 @@
     </style>
 </head>
 <body>
-
+<h2>三角形の五心</h2>
     <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="単語・読みで検索 (ひらがな/カタカナ区別なし)...">
 
     <table id="myTable">
@@ -45,15 +45,15 @@
             <tr>
                 <th onclick="sortTable(0)">単語</th>
                 <th onclick="sortTable(1)">読み</th>
-                <th onclick="sortTable(2)">分類</th>
+                <th onclick="sortTable(2)">説明</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td><a href="/list/perfect-number">完全数</a></td><td>カンゼンスウ</td><td>数学用語</td></tr>
-            <tr><td>ペン</td><td>ぺん</td><td>文房具</td></tr>
-            <tr><td>時計</td><td>トケイ</td><td>雑貨</td></tr>
-            <tr><td>自転車</td><td>じてんしゃ</td><td>乗り物</td></tr>
-            <tr><td>消しゴム</td><td>けしごむ</td><td>文房具</td></tr>
+            <tr><td>重心</td><td>じゅうしん</td><td>3つの頂点と対辺の中点を結ぶ線分が交わる点</td></tr>
+            <tr><td>内心</td><td>ないしん</td><td>3つの内角の二等分線が交わる点</td></tr>
+            <tr><td>外心</td><td>がいしん</td><td>3つの辺の垂直二等分線が交わる点</td></tr>
+            <tr><td>垂心</td><td>すいしん</td><td>3つの頂点から対辺に引いた垂線が交わる点</td></tr>
+            <tr><td>傍心</td><td>ぼうしん</td><td>1つの内角と他の3つの外角の二等分線が交わる点</td></tr>
         </tbody>
     </table>
 
