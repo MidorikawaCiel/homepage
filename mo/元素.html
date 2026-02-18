@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* 視認性をシンプル（標準的）なものに調整 */
+        body { font-family: sans-serif; padding: 20px; color: #333; }
+        
+        #searchInput {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #eee;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover { background-color: #ddd; }
+
+        th::after { content: " ↕"; color: #888; }
+    </style>
+</head>
+<body>
+<h2>三角形の五心</h2>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="検索...">
+
+    <table id="myTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">原子番号</th>
+                <th onclick="sortTable(1)">元素名</th>
+                <th onclick="sortTable(2)">読み</th>
+                <th onclick="sortTable(3)">元素記号</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>水素</td><td>すいそ</td><td>H</td></tr>
+            <tr><td>2</td><td>ヘリウム</td><td>へりうむ</td><td>He</td></tr>
+            <tr><td>3</td><td>リチウム</td><td>りちうむ</td><td>Li</td></tr>
+            <tr><td>4</td><td>ベリリウム</td><td>べりりうむ</td><td>Be</td></tr>
+            <tr><td>5</td><td>ホウ素</td><td>ほうそ</td><td>B</td></tr>
+            <tr><td>6</td><td>炭素</td><td>たんそ</td><td>C</td></tr>
+            <tr><td>7</td><td>窒素</td><td>ちっそ</td><td>N</td></tr>
+            <tr><td>8</td><td>酸素</td><td>さんそ</td><td>O</td></tr>
+            <tr><td>9</td><td>フッ素</td><td>ふっそ</td><td>F</td></tr>
+            <tr><td>10</td><td>ネオン</td><td>ねおん</td><td>Ne</td></tr>
+        </tbody>
+    </table>
+
+<script>
+    /**
+     * カタカナをひらがなに正規化
+     */
+    function kanaToHira(str) {
+        return str.replace(/[\u30a1-\u30f6]/g, function(match) {
+            const chr = match.charCodeAt(0) - 0x60;
+            return String.fromCharCode(chr);
+        });
+    }
+
+    /**
+     * 検索機能：全列を対象にフィルタリング
+     */
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = kanaToHira(input.value.toLowerCase());
+        const table = document.getElementById("myTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            let found = false;
+            const tds = tr[i].getElementsByTagName("td");
+            
+            // 全ての列をループして検索
+            for (let j = 0; j < tds.length; j++) {
+                if (tds[j]) {
+                    const text = kanaToHira(tds[j].textContent.toLowerCase());
+                    if (text.indexOf(filter) > -1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            tr[i].style.display = found ? "" : "none";
+        }
+    }
+
+    /**
+     * ソート機能：数値と文字列を自動判定
+     */
+    function sortTable(n) {
+        const table = document.getElementById("myTable");
+        let switching = true;
+        let dir = "asc"; 
+        let switchcount = 0;
+
+        while (switching) {
+            switching = false;
+            const rows = table.rows;
+            for (var i = 1; i < (rows.length - 1); i++) {
+                var shouldSwitch = false;
+                const x = rows[i].getElementsByTagName("td")[n];
+                const y = rows[i + 1].getElementsByTagName("td")[n];
+
+                // 数値として比較できるか確認
+                let xVal = x.textContent || x.innerText;
+                let yVal = y.textContent || y.innerText;
+                
+                // 数字のみの場合は数値変換、それ以外は小文字文字列
+                const xFinal = isNaN(xVal) || xVal.trim() === "" ? xVal.toLowerCase() : Number(xVal);
+                const yFinal = isNaN(yVal) || yVal.trim() === "" ? yVal.toLowerCase() : Number(yVal);
+
+                if (dir === "asc") {
+                    if (xFinal > yFinal) { shouldSwitch = true; break; }
+                } else if (dir === "desc") {
+                    if (xFinal < yFinal) { shouldSwitch = true; break; }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount === 0 && dir === "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
