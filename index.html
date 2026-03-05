@@ -2,128 +2,96 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My SNS Links</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; padding: 20px; color: #333; }
-        
-        #searchInput {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            font-size: 16px;
-            border: 1px solid #ccc;
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
         }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid #eee;
         }
-
-        th {
-            background-color: #eee;
-            cursor: pointer;
-            user-select: none;
+        h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
         }
-
-        th:hover { background-color: #ddd; }
-
-        th::after { content: " ↕"; color: #888; }
+        p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .link-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .link-card i {
+            margin-right: 10px;
+        }
+        .link-card:hover {
+            transform: translateY(-3px);
+            opacity: 0.9;
+        }
+        /* 各SNSのブランドカラー */
+        .twitter   { background-color: #1DA1F2; }
+        .instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .youtube   { background-color: #FF0000; }
+        .github    { background-color: #333333; }
     </style>
 </head>
 <body>
 
-    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="単語・読みで検索 (ひらがな/カタカナ区別なし)...">
+<div class="container">
+    <img src="https://via.placeholder.com/150" alt="Profile" class="profile-img">
+    
+    <h1>ユーザー名</h1>
+    <p>ここに短い自己紹介を書きます。</p>
 
-    <table id="myTable">
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)">単語</th>
-                <th onclick="sortTable(1)">読み</th>
-                <th onclick="sortTable(2)">リンク</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>三角形の五心</td><td>さんかっけいのごしん</td><td><a href="/Quiz/mo/三角形の五心">リンク</a></td></tr>
-        </tbody>
-    </table>
+    <a href="https://twitter.com/あなたのID" class="link-card twitter">
+        <i class="fa-brands fa-x-twitter"></i> Twitter (X)
+    </a>
+    
+    <a href="https://instagram.com/あなたのID" class="link-card instagram">
+        <i class="fa-brands fa-instagram"></i> Instagram
+    </a>
 
-<script>
-    /**
-     * カタカナをひらがなに変換する関数（検索の正規化用）
-     */
-    function kanaToHira(str) {
-        return str.replace(/[\u30a1-\u30f6]/g, function(match) {
-            const chr = match.charCodeAt(0) - 0x60;
-            return String.fromCharCode(chr);
-        });
-    }
+    <a href="https://youtube.com/@あなたのID" class="link-card youtube">
+        <i class="fa-brands fa-youtube"></i> YouTube
+    </a>
 
-    function filterTable() {
-        const input = document.getElementById("searchInput");
-        // 入力値を「小文字」かつ「ひらがな」に統一
-        const filter = kanaToHira(input.value.toLowerCase());
-        const table = document.getElementById("myTable");
-        const tr = table.getElementsByTagName("tr");
-
-        for (let i = 1; i < tr.length; i++) {
-            const tdWord = tr[i].getElementsByTagName("td")[0];
-            const tdReading = tr[i].getElementsByTagName("td")[1];
-            
-            if (tdWord && tdReading) {
-                // 比較対象のテキストも「ひらがな」に変換してチェック
-                const wordText = kanaToHira(tdWord.textContent.toLowerCase());
-                const readingText = kanaToHira(tdReading.textContent.toLowerCase());
-
-                if (wordText.indexOf(filter) > -1 || readingText.indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
-            }
-        }
-    }
-
-    function sortTable(n) {
-        const table = document.getElementById("myTable");
-        let switching = true;
-        let dir = "asc"; 
-        let switchcount = 0;
-
-        while (switching) {
-            switching = false;
-            const rows = table.rows;
-            for (var i = 1; i < (rows.length - 1); i++) {
-                var shouldSwitch = false;
-                const x = rows[i].getElementsByTagName("td")[n];
-                const y = rows[i + 1].getElementsByTagName("td")[n];
-
-                const xVal = x.innerHTML.toLowerCase();
-                const yVal = y.innerHTML.toLowerCase();
-
-                if (dir === "asc") {
-                    if (xVal > yVal) { shouldSwitch = true; break; }
-                } else if (dir === "desc") {
-                    if (xVal < yVal) { shouldSwitch = true; break; }
-                }
-            }
-            if (shouldSwitch) {
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
-                switchcount++;
-            } else {
-                if (switchcount === 0 && dir === "asc") {
-                    dir = "desc";
-                    switching = true;
-                }
-            }
-        }
-    }
-</script>
+    <a href="https://github.com/あなたのID" class="link-card github">
+        <i class="fa-brands fa-github"></i> GitHub
+    </a>
+</div>
 
 </body>
 </html>
