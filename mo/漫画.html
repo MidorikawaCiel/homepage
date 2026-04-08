@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>漫画作品データベース</title>
+    <title>漫画</title>
     <style>
         body { font-family: sans-serif; padding: 20px; color: #333; }
         h2 { margin-bottom: 20px; } /* 下線を削除し、余白のみに設定 */
@@ -59,9 +59,8 @@
 </head>
 <body>
 
-    <h2>漫画作品データベース</h2>
-    <p style="font-size: 0.9em; color: #666;">※グループ列は完全一致、その他は部分一致で検索されます。</p>
-    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、読み、作者、またはグループ名で検索...">
+    <h2>漫画</h2>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="検索...">
 
     <div class="table-container">
         <table id="myTable">
