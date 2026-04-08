@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>漫画作品データベース（元素表スタイル）</title>
+    <title>漫画作品データベース</title>
     <style>
         body { font-family: sans-serif; padding: 20px; color: #333; }
         h2 { border-bottom: 2px solid #ccc; padding-bottom: 10px; }
@@ -29,7 +29,7 @@
         }
 
         th {
-            background-color: #eee;
+            background-color: #eee; /* ヘッダーのみグレー */
             position: sticky;
             top: 0;
             z-index: 10;
@@ -44,24 +44,20 @@
             border: 1px solid #ccc;
             padding: 8px 10px;
             text-align: left;
+            /* 色や太さの装飾なし */
         }
 
-        th:hover { background-color: #ddd; }
-        th::after { content: " ↕"; color: #888; font-size: 0.8em; }
+        /* 説明列の幅指定 */
+        td:nth-child(5) { width: 30%; }
 
-        /* グループ列のスタイル */
-        td:nth-child(4) { font-size: 0.85em; color: #2980b9; font-weight: bold; text-align: center; }
-        /* 説明列 */
-        td:nth-child(5) { font-size: 0.9em; color: #666; width: 30%; }
-
-        tr:nth-child(even) { background-color: #fafafa; }
-        tr:hover { background-color: #f0f0f0; }
+        /* 行の色分けやホバー時の変化をすべて無効化 */
+        tr { background-color: #fff; }
     </style>
 </head>
 <body>
 
     <h2>漫画作品データベース</h2>
-    <p style="font-size: 0.9em; color: #666;">※グループ列（青文字）は完全一致、その他は部分一致で検索されます。</p>
+    <p style="font-size: 0.9em; color: #666;">※グループ列は完全一致、その他は部分一致で検索されます。</p>
     <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、読み、作者、またはグループ名で検索...">
 
     <div class="table-container">
@@ -81,14 +77,13 @@
     </div>
 
 <script>
-    // [タイトル, 読み, 作者, グループ, 説明]
     const mangaData = [
         ["ONE PIECE", "わんぴーす", "尾田栄一郎", "少年漫画, ジャンプ, 連載中", "海賊王を目指す壮大な海洋冒険ロマン。"],
         ["ドラえもん", "どらえもん", "藤子・F・不二雄", "児童漫画, 完結", "未来から来たネコ型ロボットとの日常。"],
         ["進撃の巨人", "しんげきのきょじん", "諫山創", "少年漫画, マガジン, 完結", "巨人と人類の戦いを描くダークファンタジー。"],
         ["鋼の錬金術師", "はがねのれんきんじゅつし", "荒川弘", "少年漫画, ガンガン, 完結", "等価交換の原則の下、失った体を取り戻す旅。"],
         ["名探偵コナン", "めいたんていこなん", "青山剛昌", "少年漫画, サンデー, 連載中", "見た目は子供、頭脳は大人。難事件を解決する推理漫画。"],
-        ["SLAM DUNK", "すらむだんく", "井上雄彦", "少年漫画, ジャンプ, 完結", "不良少年・桜木花道がバスケットボールを通じて成長する物語。"],
+        ["SLAM DUNK", "すらむだんく", "井上雄彦", "少年漫画, ジャンプ, 完結", "不良少年・桜木花道がバスケットボールを通じて成長。"],
         ["3月のライオン", "さんがつのらいおん", "羽海野チカ", "青年漫画, 連載中", "若き将棋棋士の孤独と温かな人々との交流。"]
     ];
 
@@ -99,9 +94,6 @@
         tbody.appendChild(tr);
     });
 
-    /**
-     * ひらがなをカタカナに変換
-     */
     function hiraToKana(str) {
         return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
     }
