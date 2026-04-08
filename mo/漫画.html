@@ -2,60 +2,51 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>漫画</title>
+    <title>漫画作品データベース（シンプル版）</title>
     <style>
-        body { font-family: "Helvetica Neue", Arial, sans-serif; padding: 20px; color: #333; background-color: #f4f7f6; }
-        h2 { border-left: 5px solid #2c3e50; padding-left: 15px; margin-bottom: 20px; }
+        body { font-family: sans-serif; padding: 20px; color: #000; background-color: #fff; }
+        h2 { border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
         
-        .controls { position: sticky; top: 0; background: #f4f7f6; padding: 10px 0; z-index: 100; }
+        .controls { position: sticky; top: 0; background: #fff; padding: 10px 0; z-index: 100; }
         #searchInput {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             font-size: 16px;
-            border: 2px solid #bdc3c7;
-            border-radius: 4px;
+            border: 1px solid #000;
             box-sizing: border-box;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .table-container { overflow-x: auto; max-height: 75vh; border: 1px solid #ccc; background: white; border-radius: 4px; }
+        .table-container { overflow-x: auto; max-height: 80vh; border: 1px solid #000; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
 
         th {
-            background-color: #ecf0f1;
+            background-color: #fff;
             position: sticky;
             top: 0;
             z-index: 10;
             cursor: pointer;
-            border: 1px solid #ccc;
-            padding: 12px 10px;
-            font-size: 0.9em;
-            color: #2c3e50;
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
         }
 
-        td { border: 1px solid #ccc; padding: 10px; font-size: 0.9em; }
-        th:hover { background-color: #d5dbdb; }
-        th::after { content: " ↕"; color: #95a5a6; }
-
-        .col-title { font-weight: bold; color: #2c3e50; width: 20%; }
+        td { border: 1px solid #000; padding: 10px; text-align: left; }
+        
+        /* 列ごとの幅調整（色の指定なし） */
+        .col-title { width: 20%; }
         .col-author { width: 15%; }
-        .col-group { color: #e67e22; font-weight: bold; width: 20%; }
-        .col-desc { color: #666; font-size: 0.85em; width: 30%; }
+        .col-group { width: 20%; }
+        .col-desc { width: 30%; }
 
-        tr:nth-child(even) { background-color: #fafafa; }
-        tr:hover { background-color: #fdf2e9; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>漫画作品データベース</h2>
-    <p style="font-size: 0.85em; color: #666;">
-        検索仕様：内部で<b>カタカナ</b>に正規化します。グループ名は完全一致、その他は部分一致です。
-    </p>
     
     <div class="controls">
-        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、作者、またはグループ名（少年漫画、完結など）で検索...">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、作者、またはグループ名で検索...">
     </div>
 
     <div class="table-container">
@@ -76,15 +67,14 @@
 </div>
 
 <script>
-    // [タイトル, 読み, 作者, グループ, 説明]
     const mangaData = [
         ["ONE PIECE", "わんぴーす", "尾田栄一郎", "少年漫画, ジャンプ, 連載中", "海賊王を目指す壮大な海洋冒険ロマン。"],
         ["ドラえもん", "どらえもん", "藤子・F・不二雄", "児童漫画, 完結", "未来から来たネコ型ロボットとの日常。"],
         ["進撃の巨人", "しんげきのきょじん", "諫山創", "少年漫画, マガジン, 完結", "巨人と人類の戦いを描くダークファンタジー。"],
         ["鋼の錬金術師", "はがねのれんきんじゅつし", "荒川弘", "少年漫画, ガンガン, 完結", "等価交換の原則の下、失った体を取り戻す旅。"],
         ["名探偵コナン", "めいたんていこなん", "青山剛昌", "少年漫画, サンデー, 連載中", "見た目は子供、頭脳は大人。難事件を解決する推理漫画。"],
-        ["SLAM DUNK", "すらむだんく", "井上雄彦", "少年漫画, ジャンプ, 完結", "不良少年・桜木花道がバスケットボールを通じて成長する物語。"],
-        ["3月のライオン", "さんがつのらいおん", "羽海野チカ", "青年漫画, 連載中", "若き将棋棋士の孤独と温かな人々との交流。"]
+        ["SLAM DUNK", "すらむだんく", "井上雄彦", "少年漫画, ジャンプ, 完結", "不良少年・桜木花道がバスケットボールを通じて成長。"],
+        ["3月のライオン", "さんがつのらいおん", "羽海野チカ", "青年漫画, 連載中", "若き将棋棋士の孤独と周囲の交流。"]
     ];
 
     const tbody = document.getElementById("tableBody");
@@ -95,14 +85,11 @@
             <td>${m[1]}</td>
             <td class="col-author">${m[2]}</td>
             <td class="col-group">${m[3]}</td>
-            <td class="col-desc">${m[4]}</td>
+            <td>${m[4]}</td>
         `;
         tbody.appendChild(tr);
     });
 
-    /**
-     * ひらがなをカタカナに変換
-     */
     function hiraToKana(str) {
         return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
     }
@@ -116,21 +103,16 @@
             let found = false;
             const tds = tr[i].getElementsByTagName("td");
             
-            // --- 部分一致対象 (0:タイトル, 1:読み, 2:作者) ---
+            // 0:タイトル, 1:読み, 2:作者 (部分一致)
             for (let j = 0; j <= 2; j++) {
                 const text = hiraToKana(tds[j].textContent.toUpperCase());
-                if (text.indexOf(filter) > -1) {
-                    found = true;
-                    break;
-                }
+                if (text.indexOf(filter) > -1) { found = true; break; }
             }
 
-            // --- 完全一致対象 (3:グループ) ---
+            // 3:グループ (完全一致)
             if (!found && tds[3]) {
                 const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
-                if (groups.includes(filter)) {
-                    found = true;
-                }
+                if (groups.includes(filter)) found = true;
             }
 
             tr[i].style.display = found || filter === "" ? "" : "none";
@@ -152,10 +134,7 @@
                 const y = rows[i + 1].getElementsByTagName("td")[n];
                 const xVal = (x.textContent || x.innerText).toLowerCase();
                 const yVal = (y.textContent || y.innerText).toLowerCase();
-
-                if (dir === "asc" ? xVal > yVal : xVal < yVal) {
-                    shouldSwitch = true; break;
-                }
+                if (dir === "asc" ? xVal > yVal : xVal < yVal) { shouldSwitch = true; break; }
             }
             if (shouldSwitch) {
                 rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
