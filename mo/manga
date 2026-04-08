@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>漫画</title>
+    <style>
+        body { font-family: "Helvetica Neue", Arial, sans-serif; padding: 20px; color: #333; background-color: #f4f7f6; }
+        h2 { border-left: 5px solid #2c3e50; padding-left: 15px; margin-bottom: 20px; }
+        
+        .controls { position: sticky; top: 0; background: #f4f7f6; padding: 10px 0; z-index: 100; }
+        #searchInput {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .table-container { overflow-x: auto; max-height: 75vh; border: 1px solid #ccc; background: white; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+
+        th {
+            background-color: #ecf0f1;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            padding: 12px 10px;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+
+        td { border: 1px solid #ccc; padding: 10px; font-size: 0.9em; }
+        th:hover { background-color: #d5dbdb; }
+        th::after { content: " ↕"; color: #95a5a6; }
+
+        .col-title { font-weight: bold; color: #2c3e50; width: 20%; }
+        .col-author { width: 15%; }
+        .col-group { color: #e67e22; font-weight: bold; width: 20%; }
+        .col-desc { color: #666; font-size: 0.85em; width: 30%; }
+
+        tr:nth-child(even) { background-color: #fafafa; }
+        tr:hover { background-color: #fdf2e9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>漫画作品データベース</h2>
+    <p style="font-size: 0.85em; color: #666;">
+        検索仕様：内部で<b>カタカナ</b>に正規化します。グループ名は完全一致、その他は部分一致です。
+    </p>
+    
+    <div class="controls">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、作者、またはグループ名（少年漫画、完結など）で検索...">
+    </div>
+
+    <div class="table-container">
+        <table id="myTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">タイトル</th>
+                    <th onclick="sortTable(1)">読み</th>
+                    <th onclick="sortTable(2)">作者</th>
+                    <th onclick="sortTable(3)">グループ</th>
+                    <th onclick="sortTable(4)">説明</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // [タイトル, 読み, 作者, グループ, 説明]
+    const mangaData = [
+        ["ONE PIECE", "わんぴーす", "尾田栄一郎", "少年漫画, ジャンプ, 連載中", "海賊王を目指す壮大な海洋冒険ロマン。"],
+        ["ドラえもん", "どらえもん", "藤子・F・不二雄", "児童漫画, 完結", "未来から来たネコ型ロボットとの日常。"],
+        ["進撃の巨人", "しんげきのきょじん", "諫山創", "少年漫画, マガジン, 完結", "巨人と人類の戦いを描くダークファンタジー。"],
+        ["鋼の錬金術師", "はがねのれんきんじゅつし", "荒川弘", "少年漫画, ガンガン, 完結", "等価交換の原則の下、失った体を取り戻す旅。"],
+        ["名探偵コナン", "めいたんていこなん", "青山剛昌", "少年漫画, サンデー, 連載中", "見た目は子供、頭脳は大人。難事件を解決する推理漫画。"],
+        ["SLAM DUNK", "すらむだんく", "井上雄彦", "少年漫画, ジャンプ, 完結", "不良少年・桜木花道がバスケットボールを通じて成長する物語。"],
+        ["3月のライオン", "さんがつのらいおん", "羽海野チカ", "青年漫画, 連載中", "若き将棋棋士の孤独と温かな人々との交流。"]
+    ];
+
+    const tbody = document.getElementById("tableBody");
+    mangaData.forEach(m => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td class="col-title">${m[0]}</td>
+            <td>${m[1]}</td>
+            <td class="col-author">${m[2]}</td>
+            <td class="col-group">${m[3]}</td>
+            <td class="col-desc">${m[4]}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    /**
+     * ひらがなをカタカナに変換
+     */
+    function hiraToKana(str) {
+        return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
+    }
+
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = hiraToKana(input.value.trim().toUpperCase());
+        const tr = tbody.getElementsByTagName("tr");
+
+        for (let i = 0; i < tr.length; i++) {
+            let found = false;
+            const tds = tr[i].getElementsByTagName("td");
+            
+            // --- 部分一致対象 (0:タイトル, 1:読み, 2:作者) ---
+            for (let j = 0; j <= 2; j++) {
+                const text = hiraToKana(tds[j].textContent.toUpperCase());
+                if (text.indexOf(filter) > -1) {
+                    found = true;
+                    break;
+                }
+            }
+
+            // --- 完全一致対象 (3:グループ) ---
+            if (!found && tds[3]) {
+                const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
+                if (groups.includes(filter)) {
+                    found = true;
+                }
+            }
+
+            tr[i].style.display = found || filter === "" ? "" : "none";
+        }
+    }
+
+    function sortTable(n) {
+        const table = document.getElementById("myTable");
+        let switching = true;
+        let dir = "asc"; 
+        let switchcount = 0;
+
+        while (switching) {
+            switching = false;
+            const rows = table.rows;
+            for (var i = 1; i < (rows.length - 1); i++) {
+                var shouldSwitch = false;
+                const x = rows[i].getElementsByTagName("td")[n];
+                const y = rows[i + 1].getElementsByTagName("td")[n];
+                const xVal = (x.textContent || x.innerText).toLowerCase();
+                const yVal = (y.textContent || y.innerText).toLowerCase();
+
+                if (dir === "asc" ? xVal > yVal : xVal < yVal) {
+                    shouldSwitch = true; break;
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else if (switchcount === 0 && dir === "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
