@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>漫画</title>
+    <title>漫画作品データベース</title>
     <style>
         body { font-family: sans-serif; padding: 20px; color: #333; }
-        h2 { margin-bottom: 20px; } /* 下線を削除し、余白のみに設定 */
+        h2 { margin-bottom: 20px; }
         
         #searchInput {
             width: 100%;
@@ -18,7 +18,7 @@
 
         .table-container {
             overflow-x: auto;
-            max-height: 700px;
+            max-height: 80vh; /* 画面の高さに合わせてスクロール可能に */
             border: 1px solid #ccc;
         }
 
@@ -52,25 +52,31 @@
             text-align: left;
         }
 
-        td:nth-child(5) { width: 30%; }
+        /* 各列の幅 */
+        .col-title { width: 20%; }
+        .col-kana { width: 15%; }
+        .col-author { width: 15%; }
+        .col-group { width: 20%; }
+        .col-desc { width: 30%; }
 
         tr { background-color: #fff; }
     </style>
 </head>
 <body>
 
-    <h2>漫画</h2>
-    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="検索...">
+    <h2>漫画作品データベース</h2>
+    <p style="font-size: 0.9em; color: #666;">※グループ列は完全一致、その他は部分一致で検索されます。</p>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、読み、作者、またはグループ名で検索...">
 
     <div class="table-container">
         <table id="myTable">
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)">タイトル</th>
-                    <th onclick="sortTable(1)">読み</th>
-                    <th onclick="sortTable(2)">作者</th>
-                    <th onclick="sortTable(3)">グループ</th>
-                    <th onclick="sortTable(4)">説明</th>
+                    <th onclick="sortTable(0)" class="col-title">タイトル</th>
+                    <th onclick="sortTable(1)" class="col-kana">読み</th>
+                    <th onclick="sortTable(2)" class="col-author">作者</th>
+                    <th onclick="sortTable(3)" class="col-group">グループ</th>
+                    <th onclick="sortTable(4)" class="col-desc">説明</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -79,6 +85,8 @@
     </div>
 
 <script>
+    // [タイトル, 読み, 作者, グループ, 説明]
+    // ここに必要な分だけデータを追加してください。
     const mangaData = [
         ["『ありす、宇宙までも』", "アリスドコマデモ", "売野機子", "ビッグスピリッツ, 天文", "言葉の拙い少女・朝日田ありすが日本人初の女性宇宙飛行士船長を目指す。"],
         ["『暗殺教室』", "アンサツキョウシツ", "松井優征", "ジャンプ, 中学", "椚ヶ丘中学校を舞台に、担任となった謎の生物・殺せんせーを殺すことを目指すE組の生徒たちの日常が描かれる。"],
@@ -132,11 +140,19 @@
     ];
 
     const tbody = document.getElementById("tableBody");
-    mangaData.forEach(m => {
-        let tr = document.createElement("tr");
-        tr.innerHTML = `<td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td>`;
-        tbody.appendChild(tr);
-    });
+
+    // データの描画関数
+    function renderTable(data) {
+        tbody.innerHTML = "";
+        data.forEach(m => {
+            let tr = document.createElement("tr");
+            tr.innerHTML = `<td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // 初回描画
+    renderTable(mangaData);
 
     function hiraToKana(str) {
         return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
@@ -151,11 +167,13 @@
             let found = false;
             const tds = tr[i].getElementsByTagName("td");
             
+            // 0:タイトル, 1:読み, 2:作者 (部分一致)
             for (let j = 0; j <= 2; j++) {
                 const text = hiraToKana(tds[j].textContent.toUpperCase());
                 if (text.indexOf(filter) > -1) { found = true; break; }
             }
 
+            // 3:グループ (完全一致)
             if (!found && tds[3]) {
                 const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
                 if (groups.includes(filter)) found = true;
