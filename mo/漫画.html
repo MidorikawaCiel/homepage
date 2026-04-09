@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>漫画作品データベース</title>
+    <title>漫画</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; color: #333; background-color: #fff; }
-        h2 { margin-bottom: 20px; }
+        body { font-family: sans-serif; padding: 20px; color: #333; }
+        h2 { margin-bottom: 20px; } /* 下線を削除し、余白のみに設定 */
         
         #searchInput {
             width: 100%;
@@ -16,11 +16,10 @@
             box-sizing: border-box;
         }
 
-        /* スクロールバーを出さず、中身をすべて表示する設定 */
         .table-container {
-            width: 100%;
-            overflow-x: auto; /* 横幅が足りない場合のみ横スクロール */
-            overflow-y: visible; /* 縦方向はスクロールバーを出さない */
+            overflow-x: auto;
+            max-height: 700px;
+            border: 1px solid #ccc;
         }
 
         table {
@@ -32,7 +31,7 @@
         th {
             background-color: #eee;
             position: sticky;
-            top: 0; /* スクロールしてもヘッダーが見えるように固定 */
+            top: 0;
             z-index: 10;
             cursor: pointer;
             user-select: none;
@@ -51,32 +50,27 @@
             border: 1px solid #ccc;
             padding: 8px 10px;
             text-align: left;
-            background-color: #fff;
         }
 
-        /* 列の幅指定 */
-        .col-title { width: 20%; }
-        .col-kana { width: 15%; }
-        .col-author { width: 15%; }
-        .col-group { width: 20%; }
-        .col-desc { width: 30%; }
+        td:nth-child(5) { width: 30%; }
+
+        tr { background-color: #fff; }
     </style>
 </head>
 <body>
 
-    <h2>漫画作品データベース</h2>
-    <p style="font-size: 0.9em; color: #666;">※グループ列は完全一致、その他は部分一致で検索されます。</p>
-    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="タイトル、読み、作者、またはグループ名で検索...">
+    <h2>漫画</h2>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="検索...">
 
     <div class="table-container">
         <table id="myTable">
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)" class="col-title">タイトル</th>
-                    <th onclick="sortTable(1)" class="col-kana">読み</th>
-                    <th onclick="sortTable(2)" class="col-author">作者</th>
-                    <th onclick="sortTable(3)" class="col-group">グループ</th>
-                    <th onclick="sortTable(4)" class="col-desc">説明</th>
+                    <th onclick="sortTable(0)">タイトル</th>
+                    <th onclick="sortTable(1)">読み</th>
+                    <th onclick="sortTable(2)">作者</th>
+                    <th onclick="sortTable(3)">グループ</th>
+                    <th onclick="sortTable(4)">説明</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -107,9 +101,9 @@
         ["『ちびまる子ちゃん』", "チビマルコチャン", "さくらももこ", "りぼん, 小学", "静岡県清水市を舞台に作者自身の少女時代をモデルにした小学校3年生の少女・まる子の日常を描く。"],
         ["『テルマエ・ロマエ』", "テルマエロマエ", "ヤマザキマリ", "コミックビーム, タイムトラベル", "古代ローマの設計技師ルシウス・モデストゥスが現代日本の銭湯にタイムスリップする。"],
         ["『DEATH NOTE』", "デスノート", "原作：大場つぐみ<br>作画：小畑健", "ジャンプ", "探偵・Lと死神・リュークが落とした名前を書かれた物が死ぬノートを拾った夜神月の頭脳戦を描く。"],
-        ["『ドカ食いダイスキ！ もちづきさん』", "ドカグイダイスキモチヅキサン", "まるよのかもめ", "ヤングアニマル, グルメ, ホラー", "高カロリーのものを暴食するOL・望月美琴の日常を描く。"]
+        ["『ドカ食いダイスキ！ もちづきさん』", "ドカグイダイスキモチヅキサン", "まるよのかもめ", "ヤングアニマル, グルメ, ホラー", "高カロリーのものを暴食するOL・望月美琴の日常を描く。"],
         ["『ドラえもん』", "ドラエモン", "藤子・F・藤雄", "コロコロ, てれびくん, 小学, ロボット", "未来から来たネコ型ロボット「ドラえもん」が勉強もスポーツも苦手な小学生・野比のび太を未来の道具(ひみつ道具)で助ける日常を描く。第1話は「未来の国からはるばると」。"],
-        ["『ドラゴンボール』", "ドラゴンボール", "鳥山明", "ジャンプ, 冒険, ファンタジー", "7つ集めるとどんな願いでも1つだけ叶えられるという秘宝を巡る戦いと友情を描く。"]
+        ["『ドラゴンボール』", "ドラゴンボール", "鳥山明", "ジャンプ, 冒険, ファンタジー", "7つ集めるとどんな願いでも1つだけ叶えられるという秘宝を巡る戦いと友情を描く。"],
         ["『ナナマル サンバツ』", "ナナマルサンバツ", "杉基イクラ", "エース, 高校, クイズ", "文蔵高校の新入生・越山識がクイズ研究会に入り、競技クイズの世界にのめり込んでいく。"],
         ["『鋼の錬金術師』", "ハガネノレンキンジュツシ", "荒川弘", "ガンガン, ファンタジー", "禁忌とされる人体錬成を行ったエドワードとアルフォンスの兄弟が賢者の石を求めて旅をする。"],
         ["『ハナヤマタ』", "ハナヤマタ", "浜弓場双", "きらら, 中学", "女子中学生の関谷なるたちがよさこいに青春を捧げる姿が描かれる。"],
@@ -138,16 +132,11 @@
     ];
 
     const tbody = document.getElementById("tableBody");
-
-    function renderTable() {
-        tbody.innerHTML = "";
-        mangaData.forEach(m => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td>`;
-            tbody.appendChild(tr);
-        });
-    }
-    renderTable();
+    mangaData.forEach(m => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td>`;
+        tbody.appendChild(tr);
+    });
 
     function hiraToKana(str) {
         return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
@@ -161,19 +150,18 @@
         for (let i = 0; i < tr.length; i++) {
             let found = false;
             const tds = tr[i].getElementsByTagName("td");
-            if (filter === "") {
-                tr[i].style.display = "";
-                continue;
-            }
+            
             for (let j = 0; j <= 2; j++) {
                 const text = hiraToKana(tds[j].textContent.toUpperCase());
                 if (text.indexOf(filter) > -1) { found = true; break; }
             }
+
             if (!found && tds[3]) {
                 const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
                 if (groups.includes(filter)) found = true;
             }
-            tr[i].style.display = found ? "" : "none";
+
+            tr[i].style.display = found || filter === "" ? "" : "none";
         }
     }
 
@@ -182,15 +170,16 @@
         let switching = true;
         let dir = "asc"; 
         let switchcount = 0;
+
         while (switching) {
             switching = false;
-            const rows = tbody.rows;
-            for (var i = 0; i < (rows.length - 1); i++) {
+            const rows = table.rows;
+            for (var i = 1; i < (rows.length - 1); i++) {
                 var shouldSwitch = false;
                 const x = rows[i].getElementsByTagName("td")[n];
                 const y = rows[i + 1].getElementsByTagName("td")[n];
-                const xVal = x.textContent.toLowerCase();
-                const yVal = y.textContent.toLowerCase();
+                const xVal = (x.textContent || x.innerText).toLowerCase();
+                const yVal = (y.textContent || y.innerText).toLowerCase();
                 if (dir === "asc" ? xVal > yVal : xVal < yVal) { shouldSwitch = true; break; }
             }
             if (shouldSwitch) {
