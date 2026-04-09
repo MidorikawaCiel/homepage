@@ -18,7 +18,8 @@
 
         .table-container {
             overflow-x: auto;
-            max-height: 80vh; /* 画面の高さに合わせてスクロール可能に */
+            /* heightをautoにするか、十分な高さを確保します */
+            max-height: 85vh; 
             border: 1px solid #ccc;
         }
 
@@ -50,16 +51,16 @@
             border: 1px solid #ccc;
             padding: 8px 10px;
             text-align: left;
+            background-color: #fff;
         }
 
-        /* 各列の幅 */
+        /* 列の幅固定 */
         .col-title { width: 20%; }
         .col-kana { width: 15%; }
         .col-author { width: 15%; }
         .col-group { width: 20%; }
         .col-desc { width: 30%; }
 
-        tr { background-color: #fff; }
     </style>
 </head>
 <body>
@@ -85,8 +86,7 @@
     </div>
 
 <script>
-    // [タイトル, 読み, 作者, グループ, 説明]
-    // ここに必要な分だけデータを追加してください。
+    // データを増やす際は、この配列の中に [ ] をカンマ区切りで追加してください。
     const mangaData = [
         ["『ありす、宇宙までも』", "アリスドコマデモ", "売野機子", "ビッグスピリッツ, 天文", "言葉の拙い少女・朝日田ありすが日本人初の女性宇宙飛行士船長を目指す。"],
         ["『暗殺教室』", "アンサツキョウシツ", "松井優征", "ジャンプ, 中学", "椚ヶ丘中学校を舞台に、担任となった謎の生物・殺せんせーを殺すことを目指すE組の生徒たちの日常が描かれる。"],
@@ -141,18 +141,15 @@
 
     const tbody = document.getElementById("tableBody");
 
-    // データの描画関数
-    function renderTable(data) {
+    function renderTable() {
         tbody.innerHTML = "";
-        data.forEach(m => {
-            let tr = document.createElement("tr");
+        mangaData.forEach(m => {
+            const tr = document.createElement("tr");
             tr.innerHTML = `<td>${m[0]}</td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td>`;
             tbody.appendChild(tr);
         });
     }
-
-    // 初回描画
-    renderTable(mangaData);
+    renderTable();
 
     function hiraToKana(str) {
         return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
@@ -166,20 +163,21 @@
         for (let i = 0; i < tr.length; i++) {
             let found = false;
             const tds = tr[i].getElementsByTagName("td");
-            
-            // 0:タイトル, 1:読み, 2:作者 (部分一致)
+            if (filter === "") {
+                tr[i].style.display = "";
+                continue;
+            }
+            // 部分一致 (0:タイトル, 1:読み, 2:作者)
             for (let j = 0; j <= 2; j++) {
                 const text = hiraToKana(tds[j].textContent.toUpperCase());
                 if (text.indexOf(filter) > -1) { found = true; break; }
             }
-
-            // 3:グループ (完全一致)
+            // 完全一致 (3:グループ)
             if (!found && tds[3]) {
                 const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
                 if (groups.includes(filter)) found = true;
             }
-
-            tr[i].style.display = found || filter === "" ? "" : "none";
+            tr[i].style.display = found ? "" : "none";
         }
     }
 
@@ -188,16 +186,15 @@
         let switching = true;
         let dir = "asc"; 
         let switchcount = 0;
-
         while (switching) {
             switching = false;
-            const rows = table.rows;
-            for (var i = 1; i < (rows.length - 1); i++) {
+            const rows = tbody.rows;
+            for (var i = 0; i < (rows.length - 1); i++) {
                 var shouldSwitch = false;
                 const x = rows[i].getElementsByTagName("td")[n];
                 const y = rows[i + 1].getElementsByTagName("td")[n];
-                const xVal = (x.textContent || x.innerText).toLowerCase();
-                const yVal = (y.textContent || y.innerText).toLowerCase();
+                const xVal = x.textContent.toLowerCase();
+                const yVal = y.textContent.toLowerCase();
                 if (dir === "asc" ? xVal > yVal : xVal < yVal) { shouldSwitch = true; break; }
             }
             if (shouldSwitch) {
