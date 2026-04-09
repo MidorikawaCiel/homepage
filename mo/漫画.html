@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>漫画作品データベース</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; color: #333; }
+        body { font-family: sans-serif; padding: 20px; color: #333; background-color: #fff; }
         h2 { margin-bottom: 20px; }
         
         #searchInput {
@@ -16,11 +16,11 @@
             box-sizing: border-box;
         }
 
+        /* スクロールバーを出さず、中身をすべて表示する設定 */
         .table-container {
-            overflow-x: auto;
-            /* heightをautoにするか、十分な高さを確保します */
-            max-height: 100vh; 
-            border: 1px solid #ccc;
+            width: 100%;
+            overflow-x: auto; /* 横幅が足りない場合のみ横スクロール */
+            overflow-y: visible; /* 縦方向はスクロールバーを出さない */
         }
 
         table {
@@ -32,7 +32,7 @@
         th {
             background-color: #eee;
             position: sticky;
-            top: 0;
+            top: 0; /* スクロールしてもヘッダーが見えるように固定 */
             z-index: 10;
             cursor: pointer;
             user-select: none;
@@ -54,13 +54,12 @@
             background-color: #fff;
         }
 
-        /* 列の幅固定 */
+        /* 列の幅指定 */
         .col-title { width: 20%; }
         .col-kana { width: 15%; }
         .col-author { width: 15%; }
         .col-group { width: 20%; }
         .col-desc { width: 30%; }
-
     </style>
 </head>
 <body>
@@ -86,7 +85,6 @@
     </div>
 
 <script>
-    // データを増やす際は、この配列の中に [ ] をカンマ区切りで追加してください。
     const mangaData = [
         ["『ありす、宇宙までも』", "アリスドコマデモ", "売野機子", "ビッグスピリッツ, 天文", "言葉の拙い少女・朝日田ありすが日本人初の女性宇宙飛行士船長を目指す。"],
         ["『暗殺教室』", "アンサツキョウシツ", "松井優征", "ジャンプ, 中学", "椚ヶ丘中学校を舞台に、担任となった謎の生物・殺せんせーを殺すことを目指すE組の生徒たちの日常が描かれる。"],
@@ -167,12 +165,10 @@
                 tr[i].style.display = "";
                 continue;
             }
-            // 部分一致 (0:タイトル, 1:読み, 2:作者)
             for (let j = 0; j <= 2; j++) {
                 const text = hiraToKana(tds[j].textContent.toUpperCase());
                 if (text.indexOf(filter) > -1) { found = true; break; }
             }
-            // 完全一致 (3:グループ)
             if (!found && tds[3]) {
                 const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
                 if (groups.includes(filter)) found = true;
