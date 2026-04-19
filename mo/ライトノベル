@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ライトノベル</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; color: #333; }
+        h2 { margin-bottom: 20px; }
+        
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 85vh; 
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background-color: #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th::after { 
+            content: " ↕"; 
+            color: #888; 
+            font-size: 0.8em; 
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 8px 10px;
+            text-align: left;
+            background-color: #fff;
+        }
+
+        .col-title { width: 20%; }
+        .col-kana { width: 15%; }
+        .col-author { width: 15%; }
+        .col-group { width: 20%; }
+        .col-desc { width: 30%; }
+
+        tr { background-color: #fff; }
+    </style>
+</head>
+<body>
+
+    <h2>ライトノベル作品データベース</h2>
+    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="検索...">
+
+    <div class="table-container">
+        <table id="myTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)" class="col-title">タイトル</th>
+                    <th onclick="sortTable(1)" class="col-kana">読み</th>
+                    <th onclick="sortTable(2)" class="col-author">作者</th>
+                    <th onclick="sortTable(3)" class="col-group">グループ</th>
+                    <th onclick="sortTable(4)" class="col-desc">説明</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                </tbody>
+        </table>
+    </div>
+
+<script>
+    const novelData = [
+        ["ソードアート・オンライン", "そーどあーとおんらいん", "川原礫", "電撃文庫, 連載中", "仮想現実空間での死闘を描いたゲームファンタジー。"],
+        ["とある魔術の禁書目録", "とあるまじゅつのいんでっくす", "鎌池和馬", "電撃文庫, 連載中", "科学と魔術が交差する学園異能バトル。"],
+        ["涼宮ハルヒの憂鬱", "すずみやはるひのゆううつ", "谷川流", "角川スニーカー文庫", "非日常を求める女子高生と彼女に振り回される男子の日常。"],
+        ["Re:ゼロから始める異世界生活", "りぜろからはじめるいせかいせいかつ", "長月達平", "MF文庫J, 連載中", "死ぬことで時間を巻き戻す能力「死に戻り」の物語。"],
+        ["転生したらスライムだった件", "てんせいしたらすらいむだったけん", "伏瀬", "GCノベルズ, 連載中", "スライムとして異世界に転生した主人公の建国譚。"],
+        ["物語シリーズ", "ものがたりしーりーず", "西尾維新", "講談社BOX, 連載中", "吸血鬼の体質を持つ高校生と怪異に憑かれた少女たち。"],
+        ["やはり俺の青春ラブコメはまちがっている。", "やはりおれのせいしゅんらぶこめはまちがっている", "渡航", "ガガガ文庫, 完結", "ひねくれ者の主人公が奉仕部で繰り広げる青春物語。"],
+        ["スレイヤーズ", "すれいやーず", "神坂一", "富士見ファンタジア文庫", "天才魔道士リナ・インバースの冒険を描くファンタジー。"],
+        ["無職転生", "むしょくてんせい", "理不尽な孫の手", "MFブックス, 完結", "現代のニートが異世界で人生をやり直す大河ドラマ。"],
+        ["オーバーロード", "おーばーろーど", "丸山くがね", "エンターブレイン, 連載中", "DMMO-RPGのプレイヤーが異世界に転移する物語。"],
+        ["この素晴らしい世界に祝福を！", "このすばらしいせかいにしゅくふくを", "暁なつめ", "角川スニーカー文庫, 完結", "死後の異世界転生から始まる、残念な仲間とのコメディ。"]
+    ];
+
+    const tbody = document.getElementById("tableBody");
+
+    function renderTable() {
+        tbody.innerHTML = "";
+        novelData.forEach(n => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${n[0]}</td><td>${n[1]}</td><td>${n[2]}</td><td>${n[3]}</td><td>${n[4]}</td>`;
+            tbody.appendChild(tr);
+        });
+    }
+    renderTable();
+
+    function hiraToKana(str) {
+        return str.replace(/[\u3041-\u3096]/g, m => String.fromCharCode(m.charCodeAt(0) + 0x60));
+    }
+
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = hiraToKana(input.value.trim().toUpperCase());
+        const tr = tbody.getElementsByTagName("tr");
+
+        for (let i = 0; i < tr.length; i++) {
+            let found = false;
+            const tds = tr[i].getElementsByTagName("td");
+            if (filter === "") {
+                tr[i].style.display = "";
+                continue;
+            }
+            // 部分一致 (タイトル, 読み, 作者)
+            for (let j = 0; j <= 2; j++) {
+                const text = hiraToKana(tds[j].textContent.toUpperCase());
+                if (text.indexOf(filter) > -1) { found = true; break; }
+            }
+            // 完全一致 (グループ)
+            if (!found && tds[3]) {
+                const groups = tds[3].textContent.split(",").map(g => hiraToKana(g.trim().toUpperCase()));
+                if (groups.includes(filter)) found = true;
+            }
+            tr[i].style.display = found ? "" : "none";
+        }
+    }
+
+    function sortTable(n) {
+        const table = document.getElementById("myTable");
+        let switching = true;
+        let dir = "asc"; 
+        let switchcount = 0;
+        while (switching) {
+            switching = false;
+            const rows = tbody.rows;
+            for (var i = 0; i < (rows.length - 1); i++) {
+                var shouldSwitch = false;
+                const x = rows[i].getElementsByTagName("td")[n];
+                const y = rows[i + 1].getElementsByTagName("td")[n];
+                const xVal = x.textContent.toLowerCase();
+                const yVal = y.textContent.toLowerCase();
+                if (dir === "asc" ? xVal > yVal : xVal < yVal) { shouldSwitch = true; break; }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else if (switchcount === 0 && dir === "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
